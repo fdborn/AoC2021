@@ -1,74 +1,84 @@
 <div class="exercise nm-flat-filter">
   <h2><%= @title %></h2>
   <div class="exercise-top">
-    <%= case @input_mode do %>
-      <% :show -> %>
-        <ul class="exercise-inputs">
-        <%= for input <- @inputs do %>
-          <li class={"nm-flat-filter #{if @selected == input, do: "selected"}"}>
-            <span class="exercise-input-title"><%= input %></span>
-            <button
-              type="button"
-              phx-click="select"
-              phx-target={@myself}
-              phx-value-name={input}
-            >
-              select
-            </button>
-            <button
-              type="button"
-              phx-click="edit"
-              phx-target={@myself}
-              phx-value-name={input}
-            >
-              edit
-            </button>
-            <button
-              type="button"
-              phx-click="delete"
-              phx-target={@myself}
-              phx-value-name={input}
-              data-confirm="Are you sure?"
-              phx-disable-with="deleting..."
-            >
-              del
-            </button>
+    <ul class="exercise-inputs">
+      <%= for input <- @inputs do %>
+        <%= if @input_mode == :edit && input == @edit_input_name do %>
+          <li class="nm-flat-filter">
+            <.input_form
+              myself={@myself}
+              class="exercise-input-form"
+              name={@edit_input_name}
+              content={@edit_input_content}
+            />
+          </li>
+        <% else %>
+          <li class={if @selected == input, do: "nm-inset-shadow", else: "nm-flat-filter"}>
+            <div class="exercise-input">
+              <span class="exercise-input-title"><%= input %></span>
+              <button
+                type="button"
+                phx-click="select"
+                phx-target={@myself}
+                phx-value-name={input}
+              >
+                select
+              </button>
+              <button
+                type="button"
+                phx-click="edit"
+                phx-target={@myself}
+                phx-value-name={input}
+              >
+                edit
+              </button>
+              <button
+                type="button"
+                phx-click="delete"
+                phx-target={@myself}
+                phx-value-name={input}
+                data-confirm="Are you sure?"
+                phx-disable-with="deleting..."
+              >
+                del
+              </button>
+            </div>
           </li>
         <% end %>
-        </ul>
+      <% end %>
+      <%= if @input_mode == :new do %>
+        <li class="nm-flat-filter">
+          <.input_form
+            myself={@myself}
+            class="exercise-input-form"
+            name=""
+            content=""
+          />
+        </li>
+      <% else %>
         <button
           type="button"
+          class="exercise-inputs-new nm-flat-filter"
           phx-click="new"
           phx-target={@myself}
         >
           new
         </button>
-
-      <% :new -> %>
-        <.input_form
-          myself={@myself}
-          name=""
-          content=""
-        />
-
-      <% :edit -> %>
-        <.input_form
-          myself={@myself}
-          name={@input_name}
-          content={@input_content}
-        />
-    <% end %>
+      <% end %>
+    </ul>
   </div>
   <div class="exercise-bottom">
+    <h2>Output</h2>
     <button
       type="button"
+      class="exercise-run"
       phx-click="run"
       phx-target={@myself}
       disabled={@selected == nil}
     >
       run
     </button>
-    <pre>
+    <pre class="exercise-output nm-inset-shadow">
       <%= @result %>
     </pre>
   </div>

@@ -1,5 +1,5 @@
 .exercises > * + * {
-  margin-top: var(--vr2);
+  margin-top: var(--vr3);
 }
 
 .exercise {
@@ -8,29 +8,83 @@
   padding: var(--vr2);
 }
 
+.exercise-top {
+  margin-bottom: var(--vr3);
+}
+
 .exercise-inputs {
   margin-bottom: var(--vr1);
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   grid-template-rows: auto;
-  grid-gap: var(--vr1);
+  grid-gap: var(--vr2);
+}
+
+.exercise-inputs-new {
+  appearance: none;
+  border: 0;
+  border-radius: 5px;
+  background: var(--nm-background);
+  margin: 0;
+  padding: 0;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.exercise-inputs-new:active {
+  filter: none;
+  box-shadow: var(--nm-box-shadow-inset);
 }
 
 .exercise-inputs li {
-  padding: 10px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
   background: var(--nm-background);
   border-radius: 5px;
-  grid-gap: 10px;
 }
 
-.exercise-inputs li.selected {
-  background-color: #cae3d7;
+.exercise-inputs > * {
+  min-height: 140px;
+}
+
+.exercise-input {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 10px;
+  height: 100%;
+  padding: var(--vr1);
 }
 
 .exercise-input-title {
   display: block;
   grid-column-end: span 3;
   margin-bottom: var(--vr1);
+}
+
+.exercise-input-form {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 10px;
+  height: 100%;
+  padding: var(--vr1);
+}
+
+.exercise-input-form input,
+.exercise-input-form textarea {
+  grid-column-end: span 2;
+  width: 100%;
+}
+
+.exercise-run {
+  margin-bottom: 10px;
+}
+
+.exercise-output {
+  border-radius: 10px;
+  min-height: 100px;
+  max-height: 200px;
+  padding: var(--vr1);
+  overflow-y: auto;
 }

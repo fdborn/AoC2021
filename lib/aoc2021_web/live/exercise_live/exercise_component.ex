@@ -35,12 +35,11 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
 
   @impl true
   def handle_event("edit", %{"name" => name}, socket) do
-    IO.inspect(name, label: "name")
     socket =
       socket
       |> assign(:input_mode, :edit)
-      |> assign(:input_name, name)
-      |> assign(:input_content, Exercise.get_input(socket.assigns.exercise, name))
+      |> assign(:edit_input_name, name)
+      |> assign(:edit_input_content, Exercise.get_input(socket.assigns.exercise, name))
 
     {:noreply, socket}
   end
@@ -52,7 +51,7 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
     socket =
       socket
       |> assign(:input_mode, :show)
-      |> assign(:inputs, Exercise.list_inputs(socket.assign.exercise))
+      |> assign(:inputs, Exercise.list_inputs(socket.assigns.exercise))
 
     {:noreply, socket}
   end
@@ -89,8 +88,8 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
 
   defp input_form(assigns) do
     ~H"""
-    <.form let={f} for={:input} phx-submit="save" phx-target={@myself} >
-      <%= text_input f, :name, value: @name, disabled: @name != "" %>
+    <.form let={f} for={:input} phx-submit="save" phx-target={@myself} class={@class} >
+      <%= text_input f, :name, value: @name, readonly: @name != "" %>
       <%= textarea f, :content, value: @content %>
       <%= submit "Save", phx_disable_with: "saving..." %>
 

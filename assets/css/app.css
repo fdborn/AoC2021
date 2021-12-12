@@ -21,6 +21,10 @@ body {
   filter: var(--nm-filter);
 }
 
+.nm-inset-shadow {
+  box-shadow: var(--nm-box-shadow-inset);
+}
+
 h1 {
   font-size: 4rem;
   font-weight: 700;
