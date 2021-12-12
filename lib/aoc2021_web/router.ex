@@ -17,7 +17,8 @@ defmodule Aoc2021Web.Router do
   scope "/", Aoc2021Web do
     pipe_through :browser
 
-    get "/", PageController, :index
+    live "/", CalendarLive
+    live "/:day/", ExerciseLive.Show
   end
 
   # Other scopes may use custom stacks.

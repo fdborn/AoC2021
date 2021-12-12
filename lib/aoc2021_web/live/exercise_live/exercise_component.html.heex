@@ -1,0 +1,75 @@
+<div class="exercise nm-flat-filter">
+  <h2><%= @title %></h2>
+  <div class="exercise-top">
+    <%= case @input_mode do %>
+      <% :show -> %>
+        <ul class="exercise-inputs">
+        <%= for input <- @inputs do %>
+          <li class={"nm-flat-filter #{if @selected == input, do: "selected"}"}>
+            <span class="exercise-input-title"><%= input %></span>
+            <button
+              type="button"
+              phx-click="select"
+              phx-target={@myself}
+              phx-value-name={input}
+            >
+              select
+            </button>
+            <button
+              type="button"
+              phx-click="edit"
+              phx-target={@myself}
+              phx-value-name={input}
+            >
+              edit
+            </button>
+            <button
+              type="button"
+              phx-click="delete"
+              phx-target={@myself}
+              phx-value-name={input}
+              data-confirm="Are you sure?"
+              phx-disable-with="deleting..."
+            >
+              del
+            </button>
+          </li>
+        <% end %>
+        </ul>
+        <button
+          type="button"
+          phx-click="new"
+          phx-target={@myself}
+        >
+          new
+        </button>
+
+      <% :new -> %>
+        <.input_form
+          myself={@myself}
+          name=""
+          content=""
+        />
+
+      <% :edit -> %>
+        <.input_form
+          myself={@myself}
+          name={@input_name}
+          content={@input_content}
+        />
+    <% end %>
+  </div>
+  <div class="exercise-bottom">
+    <button
+      type="button"
+      phx-click="run"
+      phx-target={@myself}
+      disabled={@selected == nil}
+    >
+      run
+    </button>
+    <pre>
+      <%= @result %>
+    </pre>
+  </div>
+</div>

@@ -1,0 +1,36 @@
+.exercises > * + * {
+  margin-top: var(--vr2);
+}
+
+.exercise {
+  background: var(--nm-background);
+  border-radius: 10px;
+  padding: var(--vr2);
+}
+
+.exercise-inputs {
+  margin-bottom: var(--vr1);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: auto;
+  grid-gap: var(--vr1);
+}
+
+.exercise-inputs li {
+  padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: var(--nm-background);
+  border-radius: 5px;
+  grid-gap: 10px;
+}
+
+.exercise-inputs li.selected {
+  background-color: #cae3d7;
+}
+
+.exercise-input-title {
+  display: block;
+  grid-column-end: span 3;
+  margin-bottom: var(--vr1);
+}

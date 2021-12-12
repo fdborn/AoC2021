@@ -1,0 +1,11 @@
+<section class="calendar">
+  <%= for day <- @days do %>
+    <%= if Map.has_key?(@exercises, day) do %>
+      <%= live_redirect to: Routes.live_path(@socket, Aoc2021Web.ExerciseLive.Show, day), class: "calendar-item nm-flat-filter" do %>
+        <%= String.pad_leading(day, 2, "0") %>
+      <% end %>
+    <% else %>
+      <span class="calendar-item nm-flat-filter"><%= String.pad_leading(day, 2, "0") %></span>
+    <% end %>
+  <% end %>
+</section>

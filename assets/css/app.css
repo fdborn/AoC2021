@@ -1,5 +1,51 @@
 /* This file is for your main application CSS */
-@import "./phoenix.css";
+
+@import "minireset.css";
+@import "./variables";
+@import "./calendar";
+@import "./exercises";
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  background: var(--nm-background);
+  font-family: var(--font-stack);
+  letter-spacing: 0.6px;
+  color: var(--nm-color);
+  font-size: 1.8rem;
+}
+
+.nm-flat-filter {
+  filter: var(--nm-filter);
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: 700;
+  margin-bottom: var(--vr2);
+}
+
+h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: var(--vr1);
+}
+
+a {
+  color: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  padding: 0 20px;
+  margin: auto;
+}
+
+.container > nav {
+  margin-bottom: var(--vr2);
+}
 
 /* Alerts and form errors used by phx.new */
 .alert {

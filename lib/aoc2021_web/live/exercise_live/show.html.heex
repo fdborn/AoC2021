@@ -1,0 +1,15 @@
+<h1>
+  <a href={"https://adventofcode.com/2021/day/#{@day}"} target="_blank">
+    Day <%= @day %>
+  </a>
+</h1>
+<section class="exercises">
+  <%= for {exercise, index} <- Enum.with_index(@exercises) do %>
+    <.live_component
+      module={ExerciseComponent}
+      id={"exercise-#{index}"}
+      exercise={exercise}
+      title={"Part #{index + 1}"}
+    />
+  <% end %>
+</section>

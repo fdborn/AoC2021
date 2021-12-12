@@ -1,0 +1,30 @@
+:root {
+  --font-stack: Corbel, "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", "DejaVu Sans", "Bitstream Vera Sans", "Liberation Sans", Verdana, "Verdana Ref", sans-serif;
+
+  --vr1: 20px;
+  --vr2: calc(var(--vr1) * 2);
+  --vr3: calc(var(--vr1) * 3);
+  --vr4: calc(var(--vr1) * 4);
+  --vr5: calc(var(--vr1) * 5);
+
+  --nm-background: #d4e0ee;
+
+  --nm-dark-offset-x: 10px;
+  --nm-dark-offset-y: 10px;
+  --nm-dark-color: rgba(0, 0, 0, 0.08);
+  --nm-blur: 10px;
+  --nm-bright-offset-x: -10px;
+  --nm-bright-offset-y: -10px;
+  --nm-bright-color: rgba(255, 255, 255, 0.2);
+
+  --nm-box-shadow: var(--nm-dark-offset-x) var(--nm-dark-offset-y) var(--nm-blur) var(--nm-dark-color),
+                   var(--nm-bright-offset-x) var(--nm-bright-offset-y) var(--nm-blur) var(--nm-bright-color);
+
+  --nm-box-shadow-inset: inset var(--nm-dark-offset-x) var(--nm-dark-offset-y) var(--nm-blur) var(--nm-dark-color),
+                         inset var(--nm-bright-offset-x) var(--nm-bright-offset-y) var(--nm-blur) var(--nm-bright-color);
+
+  --nm-filter: drop-shadow(var(--nm-dark-offset-x) var(--nm-dark-offset-y) var(--nm-blur) var(--nm-dark-color))
+               drop-shadow(var(--nm-bright-offset-x) var(--nm-bright-offset-y) var(--nm-blur) var(--nm-bright-color));
+
+  --nm-color: #464242;
+}
