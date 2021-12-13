@@ -1,4 +1,4 @@
-defmodule Aoc2021.FileHelpers do
+defmodule Aoc2021.Exercise.FileHelpers do
   def get_all_files(path) do
     case File.ls(path) do
       {:ok, files} -> files

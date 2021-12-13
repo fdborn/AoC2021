@@ -2,13 +2,14 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
   use Aoc2021Web, :live_component
 
   alias Aoc2021.Exercise
+  alias Aoc2021.Exercise.Input
 
   @impl true
   def update(assigns, socket) do
     socket =
       socket
       |> assign(assigns)
-      |> assign(:inputs, Exercise.list_inputs(assigns.exercise))
+      |> assign(:inputs, Input.list_inputs(assigns.exercise))
 
     {:ok, assign(socket, assigns)}
   end
@@ -21,7 +22,7 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       |> assign(:selected, nil)
       |> assign(:result, nil)
 
-    {:ok, socket}
+    {:ok, socket, temporary_assigns: [result: nil, edit_input_name: nil, edit_input_content: nil]}
   end
 
   @impl true
@@ -39,30 +40,30 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       socket
       |> assign(:input_mode, :edit)
       |> assign(:edit_input_name, name)
-      |> assign(:edit_input_content, Exercise.get_input(socket.assigns.exercise, name, false))
+      |> assign(:edit_input_content, Input.get_input(socket.assigns.exercise, name))
 
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("delete", %{"name" => name}, socket) do
-    :ok = Exercise.delete_input(socket.assigns.exercise, name)
+    :ok = Input.delete_input(socket.assigns.exercise, name)
 
     socket =
       socket
       |> assign(:input_mode, :show)
-      |> assign(:inputs, Exercise.list_inputs(socket.assigns.exercise))
+      |> assign(:inputs, Input.list_inputs(socket.assigns.exercise))
 
     {:noreply, socket}
   end
 
   @impl true
   def handle_event("save", %{"input" => input_params}, socket) do
-    :ok = Exercise.set_input(socket.assigns.exercise, input_params["name"], input_params["content"])
+    :ok = Input.set_input(socket.assigns.exercise, input_params["name"], input_params["content"])
 
     socket =
       socket
-      |> assign(:inputs, Exercise.list_inputs(socket.assigns.exercise))
+      |> assign(:inputs, Input.list_inputs(socket.assigns.exercise))
       |> assign(:input_mode, :show)
 
     {:noreply, socket}
@@ -71,7 +72,7 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
   @impl true
   def handle_event("run", _params, socket) do
     exercise = socket.assigns.exercise
-    input = Exercise.get_input(exercise, socket.assigns.selected)
+    input = Input.get_input(exercise, socket.assigns.selected)
 
     {:noreply, assign(socket, :result, Exercise.run(exercise, input))}
   end

@@ -4,12 +4,12 @@
   </a>
 </h1>
 <section class="exercises">
-  <%= for {exercise, index} <- Enum.with_index(@exercises) do %>
+  <%= for exercise <- @exercises do %>
     <.live_component
       module={ExerciseComponent}
-      id={"exercise-#{index}"}
+      id={"exercise-#{exercise_name(exercise)}"}
       exercise={exercise}
-      title={"Part #{index + 1}"}
+      title={exercise_name(exercise)}
     />
   <% end %>
 </section>

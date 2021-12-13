@@ -18,4 +18,6 @@ defmodule Aoc2021Web.ExerciseLive.Show do
 
     {:noreply, socket}
   end
+
+  defp exercise_name(exercise), do: Aoc2021.Exercise.name(exercise)
 end
