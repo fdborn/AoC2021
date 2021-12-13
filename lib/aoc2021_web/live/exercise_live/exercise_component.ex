@@ -39,7 +39,7 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       socket
       |> assign(:input_mode, :edit)
       |> assign(:edit_input_name, name)
-      |> assign(:edit_input_content, Exercise.get_input(socket.assigns.exercise, name))
+      |> assign(:edit_input_content, Exercise.get_input(socket.assigns.exercise, name, false))
 
     {:noreply, socket}
   end

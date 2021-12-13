@@ -3,17 +3,28 @@ defmodule Aoc2021.Exercise do
 
   @callback run(any) :: any
   @callback preprocess_input(binary) :: any
-  @optional_callbacks preprocess_input: 1
+  @callback postprocess_output(any) :: binary
+  @optional_callbacks preprocess_input: 1, postprocess_output: 1
 
   @input_base_dir Application.app_dir(:aoc2021, "priv/exercise_input")
 
-  def run(module, input), do: module.run(input)
+  def run(module, input, postprocess_output \\ true),
+    do:
+      module.run(input)
+      |> then(fn
+        output when postprocess_output -> module.postprocess_output(output)
+        output -> output
+      end)
+
   def list_inputs(module), do: FileHelpers.get_all_files(input_path(module))
 
-  def get_input(module, name),
+  def get_input(module, name, preprocess_input \\ true),
     do:
       FileHelpers.get_file(input_path(module, name))
-      |> module.preprocess_input
+      |> then(fn
+        input when preprocess_input -> module.preprocess_input(input)
+        input -> input
+      end)
 
   def set_input(module, name, content) when name != "",
     do: FileHelpers.write_file(input_path(module, name), content)
@@ -30,7 +41,13 @@ defmodule Aoc2021.Exercise do
         |> String.split("\n", trim: true)
       end
 
-      defoverridable preprocess_input: 1
+      @impl true
+      def postprocess_output(output) when is_binary(output), do: output
+
+      @impl true
+      def postprocess_output(output), do: inspect(output, pretty: true, charlists: :as_lists)
+
+      defoverridable preprocess_input: 1, postprocess_output: 1
     end
   end
 
