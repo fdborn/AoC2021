@@ -20,9 +20,9 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       socket
       |> assign(:input_mode, :show)
       |> assign(:selected, nil)
-      |> assign(:result, nil)
+      |> assign(:results, [])
 
-    {:ok, socket, temporary_assigns: [result: nil, edit_input_name: nil, edit_input_content: nil]}
+    {:ok, socket}
   end
 
   @impl true
@@ -74,7 +74,13 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
     exercise = socket.assigns.exercise
     input = Input.get_input(exercise, socket.assigns.selected)
 
-    {:noreply, assign(socket, :result, Exercise.run(exercise, input))}
+    results =
+      exercise
+      |> Exercise.run(input)
+      |> Exercise.render()
+      |> Exercise.wrap_components()
+
+    {:noreply, assign(socket, :results, results)}
   end
 
   @impl true
@@ -103,5 +109,18 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       </button>
     </.form>
     """
+  end
+
+  defp result(assigns) do
+    results =
+      case assigns.result do
+        {:component, fun, assigns} -> component(fun, assigns)
+        {:live_component, assigns} -> live_component(assigns)
+      end
+
+    assigns
+    |> assign(:results, results)
+
+    ~H"<%= results %>"
   end
 end

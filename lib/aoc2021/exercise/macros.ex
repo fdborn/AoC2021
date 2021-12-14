@@ -34,32 +34,37 @@ defmodule Aoc2021.Exercise.Macros do
         def run(input) do
           input = preprocess_input(input)
 
-          intermediate_results =
+          {intermediate_results, last_result} =
             @exercise_steps
             |> Enum.reverse()
             |> Enum.with_index(@exercise_start_index)
-            |> Enum.map_reduce(input, fn {{description, renderer, module}, index}, input ->
+            |> Enum.map_reduce(input, fn {{description, module, meta}, index}, input ->
+              {result, meta} =
+                case :timer.tc(module, :run_step, [description, input]) do
+                  {elapsed, %{__exercise__meta__: true, result: result, meta: new_meta}} ->
+                    meta =
+                      meta
+                      |> Keyword.merge(new_meta)
+                      |> Keyword.put(:elapsed, elapsed)
 
-              {nanos, intermediate_result} = :timer.tc(module, :run_step, [description, input])
+                    {result, meta}
 
-              meta = %{
-                description: description,
-                step: index,
-                elapsed: nanos,
-              }
+                  {elapsed, result} ->
+                    meta = Keyword.put(meta, :elapsed, elapsed)
+                    {result, meta}
+                end
 
-              {{intermediate_result, renderer, meta}, intermediate_result}
+              meta =
+                meta
+                |> Keyword.put(:description, description)
+                |> Keyword.put(:step, index)
+
+              {{result, meta}, result}
             end)
-            |> then(&elem(&1, 0))
 
-          rendered_steps =
-            intermediate_results
-            |> Enum.map(fn {result, renderer, meta} ->
-              renderer.render_step(result, meta)
-            end)
-            |> Enum.join("")
+          input_result = {input, is_input: true, renderer: @exercise_renderer}
 
-          @exercise_renderer.render_input(input) <> rendered_steps
+          [input_result | intermediate_results]
         end
 
         @exercise_steps nil
@@ -76,7 +81,11 @@ defmodule Aoc2021.Exercise.Macros do
   defmacro step(description, renderer, callback) do
     quote do
       if steps = @exercise_steps do
-        @exercise_steps [{unquote(description), unquote(renderer), unquote(__CALLER__.module)} | steps]
+        meta = [renderer: unquote(renderer)]
+
+        @exercise_steps [
+          {unquote(description), unquote(__CALLER__.module), meta} | steps
+        ]
 
         def run_step(unquote(description), input) do
           unquote(callback).(input)
@@ -90,6 +99,16 @@ defmodule Aoc2021.Exercise.Macros do
   defmacro step(description, callback) do
     quote do
       step(unquote(description), @exercise_renderer, unquote(callback))
+    end
+  end
+
+  defmacro with_meta(result, meta) do
+    quote do
+      %{
+        __exercise__meta__: true,
+        result: unquote(result),
+        meta: unquote(meta)
+      }
     end
   end
 

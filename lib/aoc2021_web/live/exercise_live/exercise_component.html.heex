@@ -78,8 +78,10 @@
     >
       run
     </button>
-    <pre class="exercise-output nm-inset-shadow">
-      <%= @result %>
-    </pre>
+    <div class="exercise-output nm-inset-shadow">
+      <%= for result <- @results do %>
+        <.result result={result} />
+      <% end %>
+    </div>
   </div>
 </div>

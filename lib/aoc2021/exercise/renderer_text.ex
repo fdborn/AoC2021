@@ -2,7 +2,15 @@ defmodule Aoc2021.Exercise.Renderer.Text do
   @behaviour Aoc2021.Exercise.Renderer
 
   @impl true
-  def render_input(input) do
+  def render(input, meta) do
+    if meta[:is_input] do
+      render_input(input)
+    else
+      render_step(input, meta)
+    end
+  end
+
+  defp render_input(input) do
     """
     #{big_line()}
     Input:
@@ -12,16 +20,15 @@ defmodule Aoc2021.Exercise.Renderer.Text do
     """
   end
 
-  @impl true
-  def render_step(result, meta) do
+  defp render_step(result, meta) do
     elapsed =
       Timex.Duration.from_microseconds(meta[:elapsed])
       |> Timex.Format.Duration.Formatters.Humanized.format()
 
     ~s"""
-                                |
-                                |
-                                v
+                                           |
+                                           |
+                                           v
     #{big_line()}
     Step #{meta[:step]}: #{meta[:description]}
     #{small_line()}
@@ -32,6 +39,9 @@ defmodule Aoc2021.Exercise.Renderer.Text do
     """
   end
 
-  defp big_line(), do: "=========================================================="
-  defp small_line(), do: "----------------------------------------------------------"
+  defp big_line(),
+    do: "================================================================================"
+
+  defp small_line(),
+    do: "--------------------------------------------------------------------------------"
 end

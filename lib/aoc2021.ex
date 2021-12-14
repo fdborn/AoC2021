@@ -7,9 +7,9 @@ defmodule Aoc2021 do
   if it comes from the database, an external API or others.
   """
 
-
   @exercises %{
-    "1" => [Aoc2021.Exercises.Day01.PartOne, Aoc2021.Exercises.Day01.PartTwo]
+    "1" => [Aoc2021.Exercises.Day01.Part1, Aoc2021.Exercises.Day01.Part2],
+    "2" => [Aoc2021.Exercises.Day02.Part1]
   }
 
   def list_days() do
