@@ -5,7 +5,7 @@ defmodule Aoc2021.Exercises.Day01 do
     use Exercise
 
     exercise "Part 1" do
-      preprocess fn input ->
+      step "Preprocess input", fn input ->
         input
         |> String.split("\n", trim: true)
         |> Enum.map(&String.to_integer/1)
@@ -34,7 +34,7 @@ defmodule Aoc2021.Exercises.Day01 do
     use Exercise
 
     exercise "Part 2" do
-      preprocess fn input ->
+      step "Preprocess input", fn input ->
         input
         |> String.split("\n", trim: true)
         |> Enum.map(&String.to_integer/1)
@@ -48,7 +48,22 @@ defmodule Aoc2021.Exercises.Day01 do
         Enum.map(input, &Enum.sum/1)
       end
 
-      embed_exercise Part1
+      step "Replace measurement list with deltas", fn input ->
+        input
+        |> Enum.map_reduce(nil, fn
+          depth, acc when is_nil(acc) -> {0, depth}
+          depth, acc -> {depth - acc, depth}
+        end)
+        |> elem(0)
+      end
+
+      step "Remove all measurements less or equal than 0", fn input ->
+        Enum.filter(input, &Kernel.>(&1, 0))
+      end
+
+      step "Get list length", fn input ->
+        length(input)
+      end
     end
   end
 end

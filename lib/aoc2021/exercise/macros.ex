@@ -1,5 +1,5 @@
 defmodule Aoc2021.Exercise.Macros do
-  @default_renderer Aoc2021.Exercise.Renderer.Text
+  @default_renderer Aoc2021.Exercise.Renderer.Default
 
   defmacro exercise(name, do: block) do
     quote do
@@ -13,7 +13,6 @@ defmodule Aoc2021.Exercise.Macros do
         @exercise_start_index 1
         @exercise_steps []
         @exercise_renderer unquote(renderer)
-        @exercise_preprocess nil
         unquote(block)
       end
 
@@ -32,9 +31,7 @@ defmodule Aoc2021.Exercise.Macros do
       quote do
         @impl true
         def run(input) do
-          input = preprocess_input(input)
-
-          {intermediate_results, last_result} =
+          {intermediate_results, _last_result} =
             @exercise_steps
             |> Enum.reverse()
             |> Enum.with_index(@exercise_start_index)
@@ -51,6 +48,7 @@ defmodule Aoc2021.Exercise.Macros do
 
                   {elapsed, result} ->
                     meta = Keyword.put(meta, :elapsed, elapsed)
+
                     {result, meta}
                 end
 
@@ -62,9 +60,7 @@ defmodule Aoc2021.Exercise.Macros do
               {{result, meta}, result}
             end)
 
-          input_result = {input, is_input: true, renderer: @exercise_renderer}
-
-          [input_result | intermediate_results]
+          intermediate_results
         end
 
         @exercise_steps nil
@@ -109,35 +105,6 @@ defmodule Aoc2021.Exercise.Macros do
         result: unquote(result),
         meta: unquote(meta)
       }
-    end
-  end
-
-  defmacro preprocess(callback) do
-    quote do
-      cond do
-        @exercise_preprocess != nil ->
-          raise "Cannot define more than one preprocess function"
-
-        @exercise_steps == nil ->
-          raise "Cannot place preprocess outside of exercise"
-
-        true ->
-          nil
-      end
-
-      @exercise_preprocess true
-
-      defp preprocess_input(input), do: unquote(callback).(input)
-    end
-  end
-
-  defmacro embed_exercise(module) do
-    quote do
-      if steps = @exercise_steps do
-        @exercise_steps unquote(module).steps() ++ steps
-      else
-        raise "Cannot embed exercise outside of exercise"
-      end
     end
   end
 end

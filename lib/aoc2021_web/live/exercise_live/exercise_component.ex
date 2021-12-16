@@ -78,7 +78,8 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       exercise
       |> Exercise.run(input)
       |> Exercise.render()
-      |> Exercise.wrap_components()
+
+    IO.inspect(results, label: "results")
 
     {:noreply, assign(socket, :results, results)}
   end
@@ -90,7 +91,12 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
 
   @impl true
   def handle_event("select", %{"name" => name}, socket) do
-    {:noreply, assign(socket, :selected, name)}
+    socket =
+      socket
+      |> assign(:selected, name)
+      |> assign(:results, [])
+
+    {:noreply, socket}
   end
 
   defp input_form(assigns) do
@@ -112,15 +118,29 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
   end
 
   defp result(assigns) do
-    results =
-      case assigns.result do
-        {:component, fun, assigns} -> component(fun, assigns)
-        {:live_component, assigns} -> live_component(assigns)
-      end
+    component_assigns = %{
+      id: "#{assigns.meta[:description]}-#{System.unique_integer([:positive])}",
+      module: assigns.component,
+      meta: assigns.meta,
+    }
 
-    assigns
-    |> assign(:results, results)
+    rendered = live_component(component_assigns)
 
-    ~H"<%= results %>"
+    elapsed =
+      Timex.Duration.from_microseconds(assigns.meta[:elapsed])
+      |> Timex.Format.Duration.Formatters.Humanized.format()
+
+    assigns =
+      assigns
+      |> assign(:rendered, rendered)
+      |> assign(:elapsed, elapsed)
+
+    ~H"""
+    <div class="exercise-result-meta">Took: <%= @elapsed %></div>
+    <div class="exercise-result-headline">Result:</div>
+    <div class="exercise-result-content">
+      <%= @rendered %>
+    </div>
+    """
   end
 end

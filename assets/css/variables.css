@@ -6,6 +6,11 @@
   --vr3: calc(var(--vr1) * 3);
   --vr4: calc(var(--vr1) * 4);
   --vr5: calc(var(--vr1) * 5);
+  --vr6: calc(var(--vr1) * 6);
+  --vr7: calc(var(--vr1) * 7);
+  --vr8: calc(var(--vr1) * 8);
+  --vr9: calc(var(--vr1) * 9);
+  --vr10: calc(var(--vr1) * 10);
 
   --nm-background: #c4cdd7;
 

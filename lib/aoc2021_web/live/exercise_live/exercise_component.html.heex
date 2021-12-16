@@ -1,5 +1,6 @@
 <div class="exercise nm-flat-filter">
   <h2><%= @title %></h2>
+
   <div class="exercise-top">
     <ul class="exercise-inputs">
       <%= for input <- @inputs do %>
@@ -78,9 +79,14 @@
     >
       run
     </button>
-    <div class="exercise-output nm-inset-shadow">
-      <%= for result <- @results do %>
-        <.result result={result} />
+    <div class="exercise-output">
+      <%= for {{component, meta}, index} <- Enum.with_index(@results, 1) do %>
+        <div class="exercise-result">
+          <div class="exercise-result-title">
+            <%= "Step #{index}: #{meta[:description]}" %>
+          </div>
+          <.result component={component} meta={meta} />
+        </div>
       <% end %>
     </div>
   </div>

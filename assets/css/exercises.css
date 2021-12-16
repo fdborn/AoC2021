@@ -83,8 +83,59 @@
 
 .exercise-output {
   border-radius: 10px;
-  min-height: 100px;
-  max-height: 600px;
   padding: var(--vr1);
+}
+
+.exercise-output > * {
+  filter: var(--nm-filter);
+  border-radius: 10px;
+  padding: var(--vr1);
+  background: var(--nm-background);
+}
+
+.exercise-output > * + * {
+  position: relative;
+  margin-top: var(--vr10);
+}
+
+.exercise-output > * + *::before {
+  content: '';
+  display: block;
+  position: absolute;
+  height: 100px;
+  width: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  top: -150px;
+  background: url('/images/arrow.svg') no-repeat center center;
+
+  background-size: cover;
+}
+
+.exercise-result-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.exercise-result-meta {
+  font-size: 1rem;
+  margin-bottom: var(--vr1);
+}
+
+.exercise-result-headline {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.exercise-result pre {
+  background: white;
+  padding: 10px;
+  max-height: 300px;
   overflow-y: auto;
+}
+
+.exercise-result .vega-embed {
+  display: block;
+  margin-bottom: var(--vr1);
 }
