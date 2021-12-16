@@ -79,8 +79,6 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       |> Exercise.run(input)
       |> Exercise.render()
 
-    IO.inspect(results, label: "results")
-
     {:noreply, assign(socket, :results, results)}
   end
 

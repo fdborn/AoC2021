@@ -36,6 +36,45 @@ defmodule Aoc2021.Exercises.Day02 do
     end
   end
 
+  defmodule Part2 do
+    use Exercise
+
+    exercise "Part 2" do
+      step "Preprocess input", fn input ->
+        input
+        |> String.split("\n", trim: true)
+        |> Enum.map(fn
+          "forward " <> units -> {:forward, String.to_integer(units)}
+          "down " <> units -> {:down, String.to_integer(units)}
+          "up " <> units -> {:up, String.to_integer(units)}
+        end)
+      end
+
+      step "Add start position and aim", fn input ->
+        {{0, 0, 0}, input}
+      end
+
+      step "Follow directions", Aoc2021.Exercises.Day02.MovementRenderer, fn {start, input} ->
+        {intermediate, end_pos} =
+          Enum.map_reduce(input, start, fn
+            {:forward, units}, {pos, depth, aim} ->
+              {{pos + units, depth + aim * units}, {pos + units, depth + aim * units, aim}}
+            {:down, units}, {pos, depth, aim} -> {{pos, depth}, {pos, depth, aim + units}}
+            {:up, units}, {pos, depth, aim} -> {{pos, depth}, {pos, depth, aim - units}}
+          end)
+
+        end_pos = Tuple.delete_at(end_pos, 2)
+
+        with_meta end_pos, intermediate: intermediate
+      end
+
+      step "Multiply positions", fn {pos, depth} ->
+        pos * depth
+      end
+
+    end
+  end
+
   defmodule MovementRenderer do
     @behaviour Aoc2021.Exercise.Renderer
 
