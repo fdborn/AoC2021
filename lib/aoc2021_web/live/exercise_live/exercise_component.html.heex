@@ -2,6 +2,7 @@
   <h2><%= @title %></h2>
 
   <div class="exercise-top">
+    <button class="exercise-recompile" phx-click="recompile" phx-target={@myself}>recompile</button>
     <ul class="exercise-inputs">
       <%= for input <- @inputs do %>
         <%= if @input_mode == :edit && input == @edit_input_name do %>

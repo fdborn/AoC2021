@@ -97,6 +97,13 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
     {:noreply, socket}
   end
 
+  @impl true
+  def handle_event("recompile", _unsigned_params, socket) do
+    socket.assigns.exercise.recompile()
+
+    {:noreply, socket}
+  end
+
   defp input_form(assigns) do
     ~H"""
     <.form let={f} for={:input} phx-submit="save" phx-target={@myself} class={@class} >

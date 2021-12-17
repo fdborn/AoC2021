@@ -95,7 +95,7 @@ defmodule Aoc2021.Exercises.Day03 do
       end
 
 
-      step "Calculate oxygen generator- and C02 scrubber rating", fn input ->
+      step "Calculate oxygen generator- and CO2 scrubber rating", fn input ->
         oxygen_rating_criteria = fn
           ones, half when ones == half -> 1
           ones, half when ones > half -> 1

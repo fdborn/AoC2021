@@ -27,7 +27,7 @@ defmodule Aoc2021.Exercise.Macros do
         def steps(), do: @exercise_steps
       end
 
-    runner =
+    run =
       quote do
         @impl true
         def run(input) do
@@ -66,11 +66,22 @@ defmodule Aoc2021.Exercise.Macros do
         @exercise_steps nil
       end
 
+    recompile =
+      quote do
+
+      def recompile() do
+        source = __MODULE__.module_info(:compile)[:source]
+
+        {:ok, _modules, _warning} = Kernel.ParallelCompiler.compile([source])
+      end
+    end
+
     quote do
       unquote(block)
       unquote(name)
       unquote(steps)
-      unquote(runner)
+      unquote(run)
+      unquote(recompile)
     end
   end
 
