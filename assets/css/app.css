@@ -44,7 +44,7 @@ a {
 .container {
   max-width: 1200px;
   padding: 0 20px;
-  margin: 0 auto var(--vr2) auto;
+  margin: var(--vr2) auto;
 }
 
 .container > nav {
