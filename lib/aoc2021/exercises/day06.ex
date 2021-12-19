@@ -15,25 +15,32 @@ defmodule Aoc2021.Exercises.Day06 do
         |> Enum.map(&String.to_integer/1)
       end)
 
+      step("Create list of cycles with input", fn input ->
+        cycles = for _ <- 1..@initial_cycle, do: 0
+
+        input
+        |> Enum.frequencies()
+        |> Enum.reduce(cycles, fn {cycle, amount}, cycles ->
+          List.replace_at(cycles, cycle, amount)
+        end)
+      end)
+
       step("Simulate fish growth", fn input ->
         days = 80
 
-        input
-        |> Enum.map(&descendants(&1, days))
-        |> Enum.sum()
+        cycles =
+          for _ <- 1..days, reduce: input do
+            cycles -> simulate_day(cycles)
+          end
+
+        Enum.sum(cycles)
       end)
 
-      def descendants(cycle_offset, lifetime) when cycle_offset >= lifetime, do: 1
+      def simulate_day(cycles) do
+        {spawning, cycles} = List.pop_at(cycles, 0)
+        cycles = cycles ++ [spawning]
 
-      def descendants(cycle_offset, lifetime) do
-        immediate = ceil(max(lifetime - cycle_offset, 0) / @cycle)
-
-        for descendant_generation <- 0..(immediate - 1), reduce: 1 do
-          acc ->
-            descendant_lifetime = lifetime - cycle_offset - descendant_generation * @cycle
-
-            acc + descendants(@initial_cycle, descendant_lifetime)
-        end
+        List.update_at(cycles, @cycle - 1, fn number -> number + spawning end)
       end
     end
   end
@@ -41,6 +48,8 @@ defmodule Aoc2021.Exercises.Day06 do
   defmodule Part2 do
     use Exercise
     alias Aoc2021.Exercises.Day06.Part1
+
+    @initial_cycle 9
 
     exercise "Part 2" do
       step("Preprocess input", fn input ->
@@ -50,17 +59,25 @@ defmodule Aoc2021.Exercises.Day06 do
         |> Enum.map(&String.to_integer/1)
       end)
 
+      step("Create list of cycles with input", fn input ->
+        cycles = for _ <- 1..@initial_cycle, do: 0
+
+        input
+        |> Enum.frequencies()
+        |> Enum.reduce(cycles, fn {cycle, amount}, cycles ->
+          List.replace_at(cycles, cycle, amount)
+        end)
+      end)
+
       step("Simulate fish growth", fn input ->
         days = 256
 
-        # input
-        # |> Enum.frequencies()
-        # |> Enum.reduce(0, fn {offset, amount}, total ->
-        #   descendants = Part1.descendants(offset, days)
-        #   total + descendants * amount
-        # end)
+        cycles =
+          for _ <- 1..days, reduce: input do
+            cycles -> Part1.simulate_day(cycles)
+          end
 
-        "too slow :("
+        Enum.sum(cycles)
       end)
     end
   end
