@@ -25,15 +25,20 @@ defmodule Aoc2021.Exercises.Day06 do
         end)
       end)
 
-      step("Simulate fish growth", fn input ->
+      step("Simulate fish growth", Aoc2021.Exercises.Day06.GrowthRenderer, fn input ->
         days = 80
 
-        cycles =
-          for _ <- 1..days, reduce: input do
-            cycles -> simulate_day(cycles)
+        {cycles, history} =
+          for day <- 1..days, reduce: {input, []} do
+            {cycles, history} ->
+              new_cycles = simulate_day(cycles)
+              {new_cycles, [{day, new_cycles} | history]}
           end
 
-        Enum.sum(cycles)
+        %{
+          population: Enum.sum(cycles),
+          history: history
+        }
       end)
 
       def simulate_day(cycles) do
@@ -69,16 +74,51 @@ defmodule Aoc2021.Exercises.Day06 do
         end)
       end)
 
-      step("Simulate fish growth", fn input ->
+      step("Simulate fish growth", Aoc2021.Exercises.Day06.GrowthRenderer, fn input ->
         days = 256
 
-        cycles =
-          for _ <- 1..days, reduce: input do
-            cycles -> Part1.simulate_day(cycles)
+        {cycles, history} =
+          for day <- 1..days, reduce: {input, []} do
+            {cycles, history} ->
+              new_cycles = Part1.simulate_day(cycles)
+              {new_cycles, [{day, new_cycles} | history]}
           end
 
-        Enum.sum(cycles)
+        %{
+          population: Enum.sum(cycles),
+          history: history
+        }
       end)
+    end
+  end
+
+  defmodule GrowthRenderer do
+    @behaviour Exercise.Renderer
+
+    @impl true
+    def render(result, _meta) do
+      alias VegaLite, as: Vl
+
+      data =
+        result.history
+        |> Enum.map(fn {day, cycles} ->
+          %{"day" => day, "population" => Enum.sum(cycles)}
+        end)
+
+      spec =
+        Vl.new(width: "container", height: "500")
+        |> Vl.mark(:area, tooltip: true)
+        |> Vl.data_from_values(data)
+        |> Vl.encode_field(:x, "day", type: :quantitative)
+        |> Vl.encode_field(:y, "population", type: :quantitative)
+        |> Vl.Export.to_json()
+
+      view_data = %{
+        result: result.population,
+        spec: spec
+      }
+
+      {Aoc2021Web.RendererComponents.VegaLite, view_data}
     end
   end
 end
