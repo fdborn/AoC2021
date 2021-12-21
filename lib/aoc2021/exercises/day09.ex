@@ -16,7 +16,7 @@ defmodule Aoc2021.Exercises.Day09 do
         end)
       end)
 
-      step("Build heightmap", fn input ->
+      step("Build heightmap", Aoc2021.Exercises.Day09.HeightMapRenderer, fn input ->
         map_cells =
           Enum.with_index(input)
           |> Enum.flat_map(fn {line, y} ->
@@ -26,14 +26,16 @@ defmodule Aoc2021.Exercises.Day09 do
           end)
           |> Enum.into(%{})
 
-        HeightMap.new(map_cells)
+        %{
+          map: HeightMap.new(map_cells)
+        }
       end)
 
-      step("Find low points", fn map ->
-        low_points = HeightMap.low_points(map)
+      step("Find low points", Aoc2021.Exercises.Day09.HeightMapRenderer, fn input ->
+        low_points = HeightMap.low_points(input.map)
 
         %{
-          map: map,
+          map: input.map,
           low_points: low_points
         }
       end)
@@ -61,7 +63,7 @@ defmodule Aoc2021.Exercises.Day09 do
         end)
       end)
 
-      step("Build heightmap", fn input ->
+      step("Build heightmap", Aoc2021.Exercises.Day09.HeightMapRenderer, fn input ->
         map_cells =
           Enum.with_index(input)
           |> Enum.flat_map(fn {line, y} ->
@@ -71,15 +73,17 @@ defmodule Aoc2021.Exercises.Day09 do
           end)
           |> Enum.into(%{})
 
-        HeightMap.new(map_cells)
+        %{
+          map: HeightMap.new(map_cells)
+        }
       end)
 
-      step("Find basins", fn map ->
-        basins = HeightMap.basins(map)
+      step("Find basins", Aoc2021.Exercises.Day09.HeightMapRenderer, fn input ->
+        basins = HeightMap.basins(input.map)
 
         %{
-          map: map,
-          basins: basins,
+          map: input.map,
+          basins: basins
         }
       end)
 
@@ -147,6 +151,76 @@ defmodule Aoc2021.Exercises.Day09 do
 
       (horizontal ++ vertical)
       |> Enum.reject(&is_nil(cells[&1]))
+    end
+  end
+
+  defmodule HeightMapRenderer do
+    @behaviour Exercise.Renderer
+
+    @impl true
+    def render(result, _meta) do
+      alias VegaLite, as: Vl
+
+      {map, result} = Map.pop(result, :map)
+
+      data =
+        map.cells
+        |> Enum.map(fn {{x, y}, height} -> %{x: x, y: y, height: height} end)
+
+      heightmap =
+        Vl.new(width: "container", height: "500")
+        |> Vl.mark(:rect, tooltip: true)
+        |> Vl.data_from_values(data)
+        |> Vl.encode_field(:x, "x", type: :ordinal)
+        |> Vl.encode_field(:y, "y", type: :ordinal)
+        |> Vl.encode_field(:fill, "height", type: :quantitative)
+
+      low_points =
+        if low_points = result[:low_points] do
+          low_point_data =
+            low_points
+            |> Enum.map(fn {x, y} -> %{x: x, y: y} end)
+
+          Vl.new(width: "container", height: "500")
+          |> Vl.mark(:rect, fill: "rgba(255,0,0,0.5)", tooltip: true)
+          |> Vl.data_from_values(low_point_data)
+          |> Vl.encode_field(:x, "x", type: :ordinal)
+          |> Vl.encode_field(:y, "y", type: :ordinal)
+        end
+
+      basins =
+        if basins = result[:basins] do
+          basins_data =
+            basins
+            |> Enum.with_index()
+            |> Enum.flat_map(fn {basin_points, index} ->
+              basin_points
+              |> Enum.map(fn {x, y} -> %{x: x, y: y, basin: index} end)
+            end)
+
+          Vl.new(width: "container", height: "500")
+          |> Vl.mark(:rect, fill_opacity: 0.5)
+          |> Vl.data_from_values(basins_data)
+          |> Vl.encode_field(:x, "x", type: :ordinal)
+          |> Vl.encode_field(:y, "y", type: :ordinal)
+          |> Vl.encode_field(:color, "basin", type: :nominal)
+        end
+
+      layers =
+        [heightmap, low_points, basins]
+        |> Enum.reject(&is_nil/1)
+
+      spec =
+        Vl.new(width: "container", height: "500")
+        |> Vl.layers(layers)
+        |> Vl.Export.to_json()
+
+      view_data = %{
+        result: result,
+        spec: spec
+      }
+
+      {Aoc2021Web.RendererComponents.VegaLite, view_data}
     end
   end
 end

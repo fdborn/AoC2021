@@ -19,6 +19,8 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       |> assign(:waiting, false)
       |> assign(:error, nil)
 
+    Exercise.subscribe(Exercise.name(exercise))
+
     {:ok, socket}
   end
 
@@ -71,7 +73,6 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
     exercise = socket.assigns.exercise
     input = Input.get_input(exercise, socket.assigns.selected)
 
-    Exercise.subscribe(socket.assigns.name)
     Exercise.run(exercise, input)
 
     Process.send_after(self(), :long_wait, 5_000)
