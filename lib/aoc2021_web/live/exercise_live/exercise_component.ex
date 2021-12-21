@@ -80,6 +80,7 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
       socket
       |> assign(:waiting, true)
       |> assign(:error, nil)
+      |> assign(:result, [])
 
     {:noreply, socket}
   end
