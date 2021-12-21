@@ -80,38 +80,32 @@ defmodule Aoc2021.Exercises.Day10 do
 
   defmodule ChunkParser do
     def parse(line) do
-      do_parse(line, [], [])
+      do_parse(line, [])
     end
 
-    defp do_parse([], [], parsed), do: {:ok, parsed}
-    defp do_parse([], cache, _parsed), do: {:eof, cache}
+    defp do_parse([], []), do: :ok
+    defp do_parse([], cache), do: {:eof, cache}
 
-    defp do_parse([head | tail], cache, parsed) do
+    defp do_parse([head | tail], cache) do
       case test(head, cache) do
-        {:continue, cache} ->
-          do_parse(tail, cache, parsed)
-
-        {:match, cache, pair} ->
-          do_parse(tail, cache, [pair | parsed])
-
-        {:error, bracket} ->
-          {:unexpected, bracket}
+        {:continue, cache} -> do_parse(tail, cache)
+        {:error, token} -> {:unexpected, token}
       end
     end
 
-    defp test("(", cache), do: {:continue, ["(" | cache]}
-    defp test("[", cache), do: {:continue, ["[" | cache]}
-    defp test("{", cache), do: {:continue, ["{" | cache]}
-    defp test("<", cache), do: {:continue, ["<" | cache]}
+    @opening ["(", "[", "{", "<"]
+    @closing [")", "]", "}", ">"]
 
-    defp test(")", ["(" | rest]), do: {:match, rest, "()"}
-    defp test("]", ["[" | rest]), do: {:match, rest, "[]"}
-    defp test("}", ["{" | rest]), do: {:match, rest, "{}"}
-    defp test(">", ["<" | rest]), do: {:match, rest, "<>"}
+    # Opening brackets
+    defp test(bracket, cache) when bracket in @opening, do: {:continue, [bracket | cache]}
 
-    defp test(")", _cache), do: {:error, ")"}
-    defp test("]", _cache), do: {:error, "]"}
-    defp test("}", _cache), do: {:error, "}"}
-    defp test(">", _cache), do: {:error, ">"}
+    # Matches
+    defp test(")", ["(" | rest]), do: {:continue, rest}
+    defp test("]", ["[" | rest]), do: {:continue, rest}
+    defp test("}", ["{" | rest]), do: {:continue, rest}
+    defp test(">", ["<" | rest]), do: {:continue, rest}
+
+    # Unexpected closing brackets
+    defp test(bracket, _cache) when bracket in @closing, do: {:error, bracket}
   end
 end
