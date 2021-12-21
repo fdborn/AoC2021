@@ -6,11 +6,8 @@
 </h1>
 <section class="exercises">
   <%= for exercise <- @exercises do %>
-    <.live_component
-      module={ExerciseComponent}
-      id={"exercise-#{exercise_name(exercise)}"}
-      exercise={exercise}
-      title={exercise_name(exercise)}
-    />
+    <%= live_render(@socket, ExerciseComponent, id: Exercise.name(exercise), session: %{
+      "exercise" => exercise
+    }) %>
   <% end %>
 </section>

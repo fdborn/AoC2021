@@ -1,26 +1,23 @@
 defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
-  use Aoc2021Web, :live_component
+  use Aoc2021Web, :live_view
 
   alias Aoc2021.Exercise
   alias Aoc2021.Exercise.Input
 
   @impl true
-  def update(assigns, socket) do
+  def mount(_params, session, socket) do
+    exercise = session["exercise"]
+
     socket =
       socket
-      |> assign(assigns)
-      |> assign(:inputs, Input.list_inputs(assigns.exercise))
-
-    {:ok, assign(socket, assigns)}
-  end
-
-  @impl true
-  def mount(socket) do
-    socket =
-      socket
+      |> assign(:name, Exercise.name(exercise))
+      |> assign(:exercise, exercise)
+      |> assign(:inputs, Input.list_inputs(exercise))
       |> assign(:input_mode, :show)
       |> assign(:selected, nil)
       |> assign(:results, [])
+      |> assign(:waiting, false)
+      |> assign(:error, nil)
 
     {:ok, socket}
   end
@@ -74,12 +71,49 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
     exercise = socket.assigns.exercise
     input = Input.get_input(exercise, socket.assigns.selected)
 
+    Exercise.subscribe(socket.assigns.name)
+    Exercise.run(exercise, input)
+
+    Process.send_after(self(), :long_wait, 5_000)
+
+    socket =
+      socket
+      |> assign(:waiting, true)
+      |> assign(:error, nil)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:results, results}, socket) do
     results =
-      exercise
-      |> Exercise.run(input)
+      results
       |> Exercise.render()
 
-    {:noreply, assign(socket, :results, results)}
+    socket =
+      socket
+      |> assign(:results, results)
+      |> assign(:waiting, false)
+      |> assign(:error, nil)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({:run_error, exit}, socket) do
+    socket =
+      socket
+      |> assign(:waiting, false)
+      |> assign(:error, Exception.format_exit(exit))
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info(:long_wait, socket) do
+    socket = if socket.assigns.waiting, do: assign(socket, :waiting, :long), else: socket
+
+    {:noreply, socket}
   end
 
   @impl true
@@ -106,15 +140,15 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
 
   defp input_form(assigns) do
     ~H"""
-    <.form let={f} for={:input} phx-submit="save" phx-target={@myself} class={@class} >
+    <.form let={f} for={:input} phx-submit="save" class={@class} >
       <%= text_input f, :name, value: @name, readonly: @name != "" %>
       <%= textarea f, :content, value: @content %>
-      <%= submit "Save", phx_disable_with: "saving..." %>
+      <%= submit "Save", phx_disable_with: "saving...", disabled: @disabled %>
 
       <button
         type="button"
         phx-click="cancel"
-        phx-target={@myself}
+        disabled={@disabled}
       >
         cancel
       </button>
@@ -126,7 +160,7 @@ defmodule Aoc2021Web.ExerciseLive.ExerciseComponent do
     component_assigns = %{
       id: "#{assigns.meta[:description]}-#{System.unique_integer([:positive])}",
       module: assigns.component,
-      meta: assigns.meta,
+      meta: assigns.meta
     }
 
     rendered = live_component(component_assigns)

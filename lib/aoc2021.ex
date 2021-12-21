@@ -15,6 +15,7 @@ defmodule Aoc2021 do
     "5" => [Aoc2021.Exercises.Day05.Part1, Aoc2021.Exercises.Day05.Part2],
     "6" => [Aoc2021.Exercises.Day06.Part1, Aoc2021.Exercises.Day06.Part2],
     "7" => [Aoc2021.Exercises.Day07.Part1, Aoc2021.Exercises.Day07.Part2],
+    "8" => [Aoc2021.Exercises.Day08.Part1, Aoc2021.Exercises.Day08.Part2],
   }
 
   def list_days() do

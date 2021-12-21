@@ -1,17 +1,17 @@
 <div class="exercise nm-flat-filter">
-  <h2><%= @title %></h2>
+  <h2><%= @name %></h2>
 
   <div class="exercise-top">
-    <button class="exercise-recompile" phx-click="recompile" phx-target={@myself}>recompile</button>
+    <button class="exercise-recompile" phx-click="recompile" disabled={@waiting}>recompile</button>
     <ul class="exercise-inputs">
       <%= for input <- @inputs do %>
         <%= if @input_mode == :edit && input == @edit_input_name do %>
           <li class="nm-flat-filter">
             <.input_form
-              myself={@myself}
               class="exercise-input-form"
               name={@edit_input_name}
               content={@edit_input_content}
+              disabled={@waiting}
             />
           </li>
         <% else %>
@@ -21,26 +21,26 @@
               <button
                 type="button"
                 phx-click="select"
-                phx-target={@myself}
                 phx-value-name={input}
+                disabled={@waiting}
               >
                 select
               </button>
               <button
                 type="button"
                 phx-click="edit"
-                phx-target={@myself}
                 phx-value-name={input}
+                disabled={@waiting}
               >
                 edit
               </button>
               <button
                 type="button"
                 phx-click="delete"
-                phx-target={@myself}
                 phx-value-name={input}
                 data-confirm="Are you sure?"
                 phx-disable-with="deleting..."
+                disabled={@waiting}
               >
                 del
               </button>
@@ -51,10 +51,10 @@
       <%= if @input_mode == :new do %>
         <li class="nm-flat-filter">
           <.input_form
-            myself={@myself}
             class="exercise-input-form"
             name=""
             content=""
+            disabled={false}
           />
         </li>
       <% else %>
@@ -62,7 +62,7 @@
           type="button"
           class="exercise-inputs-new nm-flat-filter"
           phx-click="new"
-          phx-target={@myself}
+          disabled={@waiting}
         >
           new
         </button>
@@ -75,12 +75,23 @@
       type="button"
       class="exercise-run"
       phx-click="run"
-      phx-target={@myself}
-      disabled={@selected == nil}
+      disabled={@selected == nil || @waiting}
     >
       run
     </button>
     <div class="exercise-output">
+      <%= if @waiting == :long do %>
+        <div class="exercise-output-waiting">
+          <h2>This seems to take a while :(</h2>
+          Started <span phx-hook="CountUp" data-start="5" id={System.unique_integer([:positive])}></span> seconds ago
+        </div>
+      <% end %>
+      <%= if @error do %>
+        <div class="exercise-output-error">
+          <h2>Error</h2>
+          <pre class="error-pre"><%= @error %></pre>
+        </div>
+      <% end %>
       <%= for {{component, meta}, index} <- Enum.with_index(@results, 1) do %>
         <div class="exercise-result">
           <div class="exercise-result-title">
